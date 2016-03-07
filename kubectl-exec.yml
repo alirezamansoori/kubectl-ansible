@@ -1,0 +1,11 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl exec on pod rhgs-1 and first container
+    kubectl: action=exec pod=rhgs-1 command=date
+
+  - name: Kubectl exec on pod rhgs-1 and container container-1
+    kubectl: action=exec pod=rhgs-1 container=container-1 command=date

@@ -1,0 +1,11 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl  stops pods and services with label name=rhgs-1
+    kubectl: action=stop type=pods,services label=name=rhgs-1
+
+  - name: Shut down the service defined in service.json
+    kubectl: action=stop file=service.json

@@ -1,0 +1,41 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl  create pod
+    kubectl: action=create name=rhgs-1 hostname=dhcp47-130.lab.eng.blr.redhat.com
+           image=brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/rhgs3/rhgs-server-rhel7
+           volumemounts={{ item }}
+           exec="/bin/bash -c /usr/sbin/setup.sh; /usr/sbin/glusterd"
+    with_items:
+                [
+                    {
+                        "name": "rhgs-etc",
+                        "mountPath": "/etc/glusterfs"
+                    },
+                    {
+                        "name": "rhgs-logs",
+                        "mountPath": "/var/log/glusterfs"
+                    },
+                    {
+                        "name": "rhgs-config",
+                        "mountPath": "/var/lib/glusterd"
+                    },
+                    {
+                        "name": "rhgs-devtree",
+                        "mountPath": "/dev"
+                    },
+                    {
+                        "name": "rhgs-cgroup",
+                        "mountPath": "/sys/fs/cgroup"
+                    },
+                    {
+                        "name": "rhgs-brick1",
+                        "mountPath": "/mnt/brick1"
+                    }
+                ]
+
+   - name: kubectl create pod from json input
+     kubectl: action=create name=rhgs-1 file=pod.json

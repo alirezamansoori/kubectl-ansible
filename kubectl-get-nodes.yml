@@ -1,0 +1,17 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl get pods in json format
+    kubectl: action=get type=pods output=json
+
+  - name: Kubectl get resources with type and  name specified in pods.yaml
+    kubectl: action=get file=pods.yaml output=json
+
+  - name: Kubectl get replication controllers and services together
+    kubectl: action=get type=rc,services output=json
+
+  - name: List one or more resources by their type and names.
+    kubectl: action=get type=rc/web,service/frontend,pods/web-pod-13je7

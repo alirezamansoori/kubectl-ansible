@@ -1,0 +1,17 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl delete pods and services with label name=rhgs-1
+    kubectl: action=delete type=pods,services label=name=rhgs-1
+
+  - name: Delete the service defined in service.json
+    kubectl: action=delete file=service.json
+
+  - name: Delete the pods with name foo and bar
+    kubectl: action=delete type=pods name=bar,foo
+
+  - name: Delete the pods with name foo and bar
+    kubectl: action=delete type=pods uid=1234-56-7890-234234-456456
