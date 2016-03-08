@@ -38,4 +38,4 @@
                 ]
 
    - name: kubectl create pod from json input
-     kubectl: action=create name=rhgs-1 file=pod.json
+     kubectl: action=create filename=pod.json
