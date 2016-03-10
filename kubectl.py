@@ -73,7 +73,8 @@ class Kubectl:
         label = self.module.params['label'] or ''
         if label:
             return "kubectl %s %s -l %s" % (self.action, ropts, label)
-        name = self._validated_params['name']
+        name = self.module.params['name']
+        name = ' '.join(name.split(',')) if name else '--all'
         return "kubectl %s %s %s" % (self.action, ropts, name)
 
 
