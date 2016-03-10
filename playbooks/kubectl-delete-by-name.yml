@@ -5,4 +5,4 @@
 
   tasks:
   - name: Delete the pods with name foo and bar
-    kubectl: action=delete type=pods name=rhgs-1,rhgs-2
+    kubectl: action=delete type=pods name=rhgs-3,rhgs-4

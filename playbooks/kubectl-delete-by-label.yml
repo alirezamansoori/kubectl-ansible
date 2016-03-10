@@ -4,5 +4,5 @@
   gather_facts: no
 
   tasks:
-  - name: Kubectl delete pods and services with label name=rhgs-1
-    kubectl: action=delete type=pods,services label=name=rhgs-1
+  - name: Kubectl delete pods and services with label name=rhgs-3
+    kubectl: action=delete type=pods,services label=name=rhgs-3

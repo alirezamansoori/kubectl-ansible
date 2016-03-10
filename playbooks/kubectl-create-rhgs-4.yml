@@ -5,7 +5,4 @@
 
   tasks:
    - name: kubectl create pod from json input
-     kubectl: action=create filename=rhgs-3.json
-
-   - name: kubectl create pod from json input
      kubectl: action=create filename=rhgs-4.json

@@ -4,6 +4,6 @@
   gather_facts: no
 
   tasks:
-  - name: Kubectl  stops pods and services with label name=rhgs-1
-    kubectl: action=stop type=pods,services label=name=rhgs-2
+  - name: Kubectl  stops pods and services with label name=rhgs-4
+    kubectl: action=stop type=pods,services label=name=rhgs-4
 

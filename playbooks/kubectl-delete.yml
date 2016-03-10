@@ -4,14 +4,14 @@
   gather_facts: no
 
   tasks:
-  - name: Kubectl delete pods and services with label name=rhgs-1
-    kubectl: action=delete type=pods,services label=name=rhgs-1
+  - name: Kubectl delete pods and services with label name=rhgs-3
+    kubectl: action=delete type=pods,services label=name=rhgs-3
 
   - name: Delete the service defined in service.json
-    kubectl: action=delete filename=rhgs-2.json
+    kubectl: action=delete filename=rhgs-4.json
 
   - name: Delete the pods with name foo and bar
-    kubectl: action=delete type=pods name=rhgs-1,rhgs-2
+    kubectl: action=delete type=pods name=rhgs-3,rhgs-4
 
   - name: Delete the pods with name foo and bar
     kubectl: action=delete type=pods uid=1234-56-7890-234234-456456
