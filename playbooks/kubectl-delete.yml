@@ -8,10 +8,10 @@
     kubectl: action=delete type=pods,services label=name=rhgs-1
 
   - name: Delete the service defined in service.json
-    kubectl: action=delete file=service.json
+    kubectl: action=delete filename=rhgs-2.json
 
   - name: Delete the pods with name foo and bar
-    kubectl: action=delete type=pods name=bar,foo
+    kubectl: action=delete type=pods name=rhgs-1,rhgs-2
 
   - name: Delete the pods with name foo and bar
     kubectl: action=delete type=pods uid=1234-56-7890-234234-456456

@@ -1,0 +1,12 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+      - name: Kubectl get details of a single pod with name rhgs-1
+        kubectl: action=get type=pod name=web
+        register: output
+
+      - debug: var=output.msg
+

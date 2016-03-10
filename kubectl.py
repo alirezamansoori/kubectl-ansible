@@ -18,6 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this software.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 class Kubectl:
 
     def __init__(self, module):
@@ -27,7 +29,12 @@ class Kubectl:
 
     def run(self):
         action_func = {
-                        'create': self.kubectl_create
+                        'create': self.kubectl_create,
+                        'get': self.kubectl_get,
+                        'delete': self.kubectl_delete,
+                        'exec': self.kubectl_exec,
+                        'stop': self.kubectl_stop,
+                        'run': self.kubectl_run
                       }.get(self.action)
 
         try:
@@ -40,7 +47,68 @@ class Kubectl:
     def kubectl_create(self):
         filename = self.module.params['filename']
         if filename:
-            return "%s -f ./%s" % (self.action, filenae)
+            return "cat %s | kubectl %s -f -" % (filename, self.action)
+
+    def kubectl_run(self):
+        name = self._validated_params('name')
+        image = self._validated_params('image')
+        return "kubectl %s %s --image=%s" % (self.action,
+                name, image)
+
+    def kubectl_exec(self):
+        pod = self._validated_params('pod')
+        container = self.module.params['container']
+        c_opts = '-c %s' % container if container else ''
+        command = self._validated_params('command')
+        if ',' in command:
+            command = command.replace(',',';')
+        return "kubectl %s %s %s %s" %(self.action, pod, c_opts,
+                command)
+
+    def kubectl_delete(self):
+        filename = self.module.params['filename']
+        if filename:
+            return "cat %s | kubectl %s -f -" % (filename, self.action)
+        ropts = self._validated_params('type') or ''
+        label = self.module.params['label'] or ''
+        if label:
+            return "kubectl %s %s -l %s" % (self.action, ropts, label)
+        name = self._validated_params['name']
+        return "kubectl %s %s %s" % (self.action, ropts, name)
+
+
+    def kubectl_stop(self):
+        filename = self.module.params['filename']
+        if filename:
+            return "cat %s | kubectl %s -f -" % (filename, self.action)
+        ropts = self._validated_params('type') or ''
+        uid = self.module.params['uid'] or ''
+        if uid:
+            return "kubectl %s %s %s" % (self.action, ropts, uid)
+        label = self.module.params['label'] or ''
+        if label:
+            return "kubectl %s %s -l %s" % (self.action, ropts, label)
+        name = self.module.params['name']
+        name = ' '.join(name.split(',')) if name else '--all'
+        return "kubectl %s %s %s" % (self.action, ropts, name)
+
+
+
+    def kubectl_get(self):
+        res_type = self.module.params['type']
+        ropts = res_type if res_type else ''
+
+        name = self.module.params['name']
+        nopts = name if (name and ropts) else ''
+
+        filename = self.module.params['filename']
+        fopts = '-f %s' % filename if (filename and not ropts) else ''
+
+        output = self.module.params['output']
+        o_opts = '-o %s' % output if output else ''
+
+        options = filter(None, [ropts, nopts, fopts, o_opts])
+        return 'kubectl {0} {1}'.format(self.action, ' '.join(options))
 
     def _validated_params(self, opt):
         value = self.module.params[opt]
@@ -49,32 +117,35 @@ class Kubectl:
             self.module.fail_json(msg=msg)
         return value
 
-    def get_command(self, options):
-        cmd = self.module.get_bin_path('kubectl', True) + options
-        return cmd
-
     def get_output(self, rc=0, out=None, err=None):
         if rc:
             self.module.fail_json(msg=err, rc=rc, err=err, out=out)
         else:
-            self.module.exit_json(changed=1, msg=out)
+            self.module.exit_json(changed=1, msg=json.dumps(out))
 
 def main():
     module = AnsibleModule(
             argument_spec = dict(
                 action          = dict(required=True, choices=["create",
-                                    "stop", "run", "exec", "get"]),
+                                    "stop", "run", "exec", "get", "delete"]),
                 name            = dict(required=False),
-                filename        = dict()
+                type            = dict(required=False),
+                filename        = dict(required=False),
+                label           = dict(required=False),
+                uid             = dict(required=False),
+                container       = dict(required=False),
+                command         = dict(required=False),
+                pod             = dict(required=False),
+                output          = dict(required=False),
+                image           = dict(required=False)
                 ),
             supports_check_mode = True
             )
 
 
     kube = Kubectl(module)
-    options = kube.run()
-    cmd = kube.get_command(options)
-    rc, out, err = module.run_command(cmd)
+    cmd = kube.run()
+    rc, out, err = module.run_command(cmd, use_unsafe_shell=True)
     kube.get_output(rc, out, err)
 
 

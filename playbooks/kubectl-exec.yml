@@ -4,8 +4,11 @@
   gather_facts: no
 
   tasks:
-  - name: Kubectl exec on pod rhgs-1 and first container
-    kubectl: action=exec pod=rhgs-1 command=date
+  - name: Kubectl exec on pod rhgs-2
+    kubectl: action=exec pod=rhgs-2 command='date,echo "hi"'
+    register: result
 
-  - name: Kubectl exec on pod rhgs-1 and container container-1
-    kubectl: action=exec pod=rhgs-1 container=container-1 command=date
+  - debug: var=result.msg
+
+
+

@@ -1,0 +1,10 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Kubectl run an image in the cluster
+    kubectl: action=run name=rhgs-3 image=registry.access.redhat.com/rhgs3/rhgs-server-rhel7
+
+

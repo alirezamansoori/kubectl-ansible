@@ -1,0 +1,8 @@
+---
+- hosts: master
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Delete all pods
+    kubectl: action=delete type=pods
